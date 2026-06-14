@@ -107,6 +107,37 @@ Please extract:
    - type: "expense" (支出) or "income" (收入)
 5. Habit completions from the available habits list. Include a habit ONLY if it was explicitly mentioned in the text. Mark completed as true if they completed it, and false if they explicitly said they did not do it (e.g., "没去跑步" -> name: "跑步", completed: false).
 
+Few-shot Examples to guide your output:
+Example 1:
+Input: "今天出二手闲置了2台旧相机回血800，打车去火锅店付了65块"
+Output JSON:
+{
+  "title": "回血与火锅晚宴",
+  "mood": "happy",
+  "diary": "今天将两台闲置的旧相机出售了，回血了八百元。晚上打车去火锅店吃火锅，打车付了六十五元。",
+  "expenses": [
+    { "amount": 800, "category": "收入", "description": "出二手闲置相机", "type": "income" },
+    { "amount": 65, "category": "交通", "description": "打车去火锅店", "type": "expense" }
+  ],
+  "habits": []
+}
+
+Example 2:
+Input: "卖衣服入账200，又去买奶茶15块，今天没运动"
+Output JSON:
+{
+  "title": "奶茶与平静午后",
+  "mood": "calm",
+  "diary": "今天卖衣服收入了两百元，随后去买了杯十五元的奶茶。今天没有进行运动。",
+  "expenses": [
+    { "amount": 200, "category": "收入", "description": "卖衣服", "type": "income" },
+    { "amount": 15, "category": "餐饮", "description": "买奶茶", "type": "expense" }
+  ],
+  "habits": [
+    { "name": "运动", "completed": false }
+  ]
+}
+
 You must return a valid JSON object matching the requested schema. Output ONLY the raw JSON object, do not wrap in markdown code blocks or write any explanation.
 `;
 
