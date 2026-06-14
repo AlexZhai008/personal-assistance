@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Sparkles, Check, RefreshCw, AlertCircle, Trash2, Plus } from 'lucide-react';
+import { Sparkles, Check, RefreshCw, AlertCircle, Trash2, Plus, Mic, MicOff } from 'lucide-react';
 import type { ParsedData, ParsedExpense } from '../utils/localParser';
 import { parseSentenceLocally } from '../utils/localParser';
 import { parseSentenceWithGemini } from '../utils/geminiParser';
@@ -31,6 +31,63 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
   const [reviewData, setReviewData] = useState<ParsedData | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  const supportSpeech = !!SpeechRecognitionClass;
+
+  const toggleListening = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+    } else {
+      try {
+        if (!recognitionRef.current) {
+          const rec = new SpeechRecognitionClass();
+          rec.lang = 'zh-CN';
+          rec.continuous = false;
+          rec.interimResults = false;
+
+          rec.onstart = () => {
+            setIsListening(true);
+          };
+
+          rec.onresult = (event: any) => {
+            const transcript = event.results[0][0].transcript;
+            if (transcript) {
+              setInput((prev) => (prev ? `${prev}${transcript}` : transcript));
+            }
+          };
+
+          rec.onerror = (event: any) => {
+            console.error('Speech recognition error:', event.error);
+            if (event.error === 'not-allowed') {
+              alert('无法使用麦克风，请在浏览器或系统设置中允许麦克风权限~');
+            } else {
+              alert(`语音识别出错: ${event.error}`);
+            }
+            setIsListening(false);
+          };
+
+          rec.onend = () => {
+            setIsListening(false);
+          };
+
+          recognitionRef.current = rec;
+        }
+
+        recognitionRef.current.start();
+      } catch (err) {
+        console.error('Failed to start speech recognition:', err);
+        alert('启动语音识别失败，请检查麦克风权限！');
+        setIsListening(false);
+      }
+    }
+  };
 
   const handleParse = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,6 +281,26 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
             disabled={loading}
             style={styles.input}
           />
+          {supportSpeech && (
+            <button
+              type="button"
+              onClick={toggleListening}
+              disabled={loading}
+              className={`sketch-button ${isListening ? 'sketch-button-primary' : ''}`}
+              style={{
+                ...styles.micBtn,
+                backgroundColor: isListening ? '#fecaca' : undefined,
+                borderColor: isListening ? '#ef4444' : undefined,
+              }}
+              title={isListening ? "正在倾听，点击停止" : "语音输入"}
+            >
+              {isListening ? (
+                <MicOff size={16} style={{ color: '#ef4444', animation: 'pulse 1.2s infinite' }} />
+              ) : (
+                <Mic size={16} />
+              )}
+            </button>
+          )}
           <button
             type="submit"
             disabled={loading || !input.trim()}
@@ -485,6 +562,12 @@ const styles = {
     alignItems: 'center',
     gap: '6px',
     whiteSpace: 'nowrap' as const,
+  },
+  micBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '8px 10px',
   },
   btnText: {
     display: 'inline',
