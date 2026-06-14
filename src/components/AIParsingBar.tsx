@@ -38,6 +38,40 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
   const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
   const supportSpeech = !!SpeechRecognitionClass;
 
+  // Reusable core parser logic
+  const performParse = async (sentence: string) => {
+    const textToParse = sentence.trim();
+    if (!textToParse) return;
+
+    setLoading(true);
+    setErrorMsg('');
+    setReviewData(null);
+
+    try {
+      let result: ParsedData;
+      if (apiKey) {
+        if (apiProvider === 'deepseek') {
+          result = await parseSentenceWithDeepSeek(textToParse, apiKey, habitsList);
+        } else {
+          result = await parseSentenceWithGemini(textToParse, apiKey, habitsList);
+        }
+      } else {
+        // Fallback to local regex-based parser
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        result = parseSentenceLocally(textToParse, habitsList);
+      }
+      setReviewData(result);
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(`AI 智能解析失败，已为您自动切换到本地解析机制。错误原因: ${err.message || '未知'}`);
+      // Fallback immediately to local
+      const localResult = parseSentenceLocally(textToParse, habitsList);
+      setReviewData(localResult);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleListening = () => {
     if (isListening) {
       if (recognitionRef.current) {
@@ -59,12 +93,22 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
           rec.onresult = (event: any) => {
             const transcript = event.results[0][0].transcript;
             if (transcript) {
-              setInput((prev) => (prev ? `${prev}${transcript}` : transcript));
+              setInput((prev) => {
+                const newText = prev ? `${prev}${transcript}` : transcript;
+                // Automatically trigger AI analysis after transcribing the speech
+                setTimeout(() => performParse(newText), 150);
+                return newText;
+              });
             }
           };
 
           rec.onerror = (event: any) => {
             console.error('Speech recognition error:', event.error);
+            // Silently ignore normal browser speech end events (e.g. quiet pause or manual abort)
+            if (event.error === 'no-speech' || event.error === 'aborted') {
+              setIsListening(false);
+              return;
+            }
             if (event.error === 'not-allowed') {
               alert('无法使用麦克风，请在浏览器或系统设置中允许麦克风权限~');
             } else {
@@ -91,36 +135,7 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
 
   const handleParse = async (e: React.FormEvent) => {
     e.preventDefault();
-    const sentence = input.trim();
-    if (!sentence) return;
-
-    setLoading(true);
-    setErrorMsg('');
-    setReviewData(null);
-
-    try {
-      let result: ParsedData;
-      if (apiKey) {
-        if (apiProvider === 'deepseek') {
-          result = await parseSentenceWithDeepSeek(sentence, apiKey, habitsList);
-        } else {
-          result = await parseSentenceWithGemini(sentence, apiKey, habitsList);
-        }
-      } else {
-        // Fallback to local regex-based parser
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        result = parseSentenceLocally(sentence, habitsList);
-      }
-      setReviewData(result);
-    } catch (err: any) {
-      console.error(err);
-      setErrorMsg(`AI 智能解析失败，已为您自动切换到本地解析机制。错误原因: ${err.message || '未知'}`);
-      // Fallback immediately to local
-      const localResult = parseSentenceLocally(sentence, habitsList);
-      setReviewData(localResult);
-    } finally {
-      setLoading(false);
-    }
+    await performParse(input);
   };
 
   const handleSave = () => {
