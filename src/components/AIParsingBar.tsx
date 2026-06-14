@@ -30,6 +30,7 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
   const [loading, setLoading] = useState(false);
   const [reviewData, setReviewData] = useState<ParsedData | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [parserUsed, setParserUsed] = useState<'deepseek' | 'gemini' | 'local'>('local');
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [isListening, setIsListening] = useState(false);
@@ -62,18 +63,22 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
       if (apiKey) {
         if (apiProvider === 'deepseek') {
           result = await parseSentenceWithDeepSeek(textToParse, apiKey, habitsList);
+          setParserUsed('deepseek');
         } else {
           result = await parseSentenceWithGemini(textToParse, apiKey, habitsList);
+          setParserUsed('gemini');
         }
       } else {
         // Fallback to local regex-based parser
         await new Promise((resolve) => setTimeout(resolve, 800));
         result = parseSentenceLocally(textToParse, habitsList);
+        setParserUsed('local');
       }
       setReviewData(result);
     } catch (err: any) {
       console.error(err);
       setErrorMsg(`AI 智能解析失败，已为您自动切换到本地解析机制。错误原因: ${err.message || '未知'}`);
+      setParserUsed('local');
       // Fallback immediately to local
       const localResult = parseSentenceLocally(textToParse, habitsList);
       setReviewData(localResult);
@@ -367,7 +372,22 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
       {reviewData && (
         <div className="sketchy-box" style={styles.reviewContainer}>
           <div style={styles.reviewHeader}>
-            <span style={styles.reviewTitle}>📝 AI 识别结果预览</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+              <span style={styles.reviewTitle}>📝 AI 识别结果预览</span>
+              <span style={{
+                fontSize: '11px',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                border: '1.5px solid var(--color-border)',
+                backgroundColor: parserUsed === 'local' ? '#f3ece2' : 'var(--color-primary-light, #e2f0d9)',
+                color: 'var(--color-text)',
+                fontWeight: 'bold'
+              }}>
+                {parserUsed === 'deepseek' && '🤖 DeepSeek 智能解析'}
+                {parserUsed === 'gemini' && '🤖 Gemini 智能解析'}
+                {parserUsed === 'local' && '⚙️ 本地规则解析'}
+              </span>
+            </div>
             <span style={styles.reviewSubtitle}>请检查并调整以下数据，然后保存写入今日手账：</span>
           </div>
 
