@@ -194,16 +194,9 @@ const styles = {
   },
   stampOverlay: {
     position: 'absolute' as const,
-    top: '-8px',
-    left: '-6px',
-    fontSize: '11px',
-    padding: '2px 4px',
-    borderWidth: '1.5px',
-    borderColor: 'var(--color-primary)',
-    color: 'var(--color-primary)',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    top: '-3px',
+    left: '-8px',
     pointerEvents: 'none' as const,
-    boxShadow: '1px 1px 3px rgba(0,0,0,0.05)',
   },
   habitName: {
     fontSize: '14px',

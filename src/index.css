@@ -160,23 +160,25 @@ body {
 
 /* Watercolor Stamp Effect (水彩印章) */
 .stamp {
-  border: 3px double var(--color-primary);
-  border-radius: 50%;
-  color: var(--color-primary);
+  border: 1.5px solid #3b5e47; /* Rich, dark sage green for high visibility */
+  border-radius: 4px;
+  color: #3b5e47;
   font-family: var(--font-hand);
   font-weight: bold;
-  font-size: 18px;
-  padding: 4px 8px;
-  text-transform: uppercase;
-  transform: rotate(-12deg);
+  font-size: 10px;
+  line-height: 1.1;
+  padding: 1px 4px;
+  background-color: rgba(253, 251, 247, 0.95); /* Opaque white-cream to cleanly mask the checkbox behind it */
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
+  transform: rotate(-8deg);
   display: inline-block;
   opacity: 0;
-  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .stamp.active {
-  opacity: 0.8;
-  transform: rotate(-12deg) scale(1.1);
+  opacity: 1; /* Fully opaque for better legibility */
+  transform: rotate(-8deg) scale(1.05);
 }
 
 /* Notebook Binding Rings (手账活页圈) */
