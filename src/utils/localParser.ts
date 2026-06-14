@@ -114,15 +114,15 @@ export function parseSentenceLocally(text: string, customHabits?: string[]): Par
     return matchedRanges.some(([s, e]) => (start >= s && start < e) || (end > s && end <= e));
   };
 
-  // Check Incomes first
-  incomePattern1.lastIndex = 0;
-  while ((match = incomePattern1.exec(text)) !== null) {
+  // Check Incomes: Specific description-first income pattern runs before the generic keyword-first pattern
+  incomePattern2.lastIndex = 0;
+  while ((match = incomePattern2.exec(text)) !== null) {
     const start = match.index;
-    const end = incomePattern1.lastIndex;
+    const end = incomePattern2.lastIndex;
     if (isOverlapping(start, end)) continue;
-    
-    const amount = parseFloat(match[1]);
-    const desc = match[2] || '收入';
+
+    const desc = match[1];
+    const amount = parseFloat(match[2]);
     if (!isNaN(amount)) {
       result.expenses.push({
         amount,
@@ -134,14 +134,14 @@ export function parseSentenceLocally(text: string, customHabits?: string[]): Par
     }
   }
 
-  incomePattern2.lastIndex = 0;
-  while ((match = incomePattern2.exec(text)) !== null) {
+  incomePattern1.lastIndex = 0;
+  while ((match = incomePattern1.exec(text)) !== null) {
     const start = match.index;
-    const end = incomePattern2.lastIndex;
+    const end = incomePattern1.lastIndex;
     if (isOverlapping(start, end)) continue;
-
-    const desc = match[1];
-    const amount = parseFloat(match[2]);
+    
+    const amount = parseFloat(match[1]);
+    const desc = match[2] || '收入';
     if (!isNaN(amount)) {
       result.expenses.push({
         amount,
