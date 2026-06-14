@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Sparkles, Check, RefreshCw, Trash2, Plus, Mic, MicOff } from 'lucide-react';
+import { Sparkles, Check, RefreshCw, Trash2, Plus, Mic, MicOff, X } from 'lucide-react';
 import type { ParsedData, ParsedExpense } from '../utils/localParser';
 import { parseSentenceLocally } from '../utils/localParser';
 import { parseSentenceWithGemini } from '../utils/geminiParser';
@@ -310,14 +310,39 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
       {/* Main Input Form */}
       <form onSubmit={handleParse} className="sketchy-box" style={styles.formContainer}>
         <div style={styles.inputWrapper}>
-          <input
-            type="text"
-            placeholder="写下你的一句话日志（例如：今天喝了3杯水，买奶茶花了15元，心情非常好！）"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            disabled={loading}
-            style={styles.input}
-          />
+          <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+            <input
+              type="text"
+              placeholder="写下你的一句话日志（例如：今天喝了3杯水，买奶茶花了15元，心情非常好！）"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              disabled={loading}
+              style={{
+                ...styles.input,
+                paddingRight: input ? '28px' : '4px',
+              }}
+            />
+            {input && !loading && (
+              <button
+                type="button"
+                onClick={() => setInput('')}
+                style={{
+                  position: 'absolute',
+                  right: '4px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: 'var(--color-text-muted)',
+                }}
+                title="清空输入"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
           {supportSpeech && (
             <button
               type="button"
