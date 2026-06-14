@@ -166,6 +166,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
+    width: '100%',
     padding: '6px 8px',
     border: '1px dashed transparent',
     borderRadius: '8px',
