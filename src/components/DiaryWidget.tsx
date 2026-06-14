@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Camera, ChevronLeft, ChevronRight } from 'lucide-react';
+import { compressImage, blobToBase64 } from '../utils/imageCompressor';
 
 interface DiaryWidgetProps {
   title: string;
@@ -9,7 +10,7 @@ interface DiaryWidgetProps {
   onChangeTitle: (title: string) => void;
   onChangeContent: (content: string) => void;
   onGenerateTitle?: () => void;
-  onChangePhoto: (idx: number, url: string | null) => void;
+  onChangePhoto: (idx: number, url: string | null, blob?: Blob) => void;
   widgetRef: React.RefObject<HTMLDivElement | null>;
   readOnly?: boolean;
 }
@@ -74,43 +75,19 @@ export const DiaryWidget: React.FC<DiaryWidgetProps> = ({
     }
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxDim = 400; // max dimension to fit polaroid aspect nicely
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > maxDim) {
-              height = Math.round((height * maxDim) / width);
-              width = maxDim;
-            }
-          } else {
-            if (height > maxDim) {
-              width = Math.round((width * maxDim) / height);
-              height = maxDim;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            const base64Url = canvas.toDataURL('image/jpeg', 0.7); // compress JPEG
-            onChangePhoto(-1, base64Url);
-          }
-        };
-        img.src = event.target?.result as string;
-      };
-      reader.readAsDataURL(file);
+      try {
+        // Compress image to JPEG Blob (max 800px width/height, 0.75 quality)
+        const compressedBlob = await compressImage(file, 800, 800, 0.75);
+        // Convert Blob to Base64 data URL for instant frontend rendering preview
+        const base64Url = await blobToBase64(compressedBlob);
+        onChangePhoto(-1, base64Url, compressedBlob);
+      } catch (err) {
+        console.error('Failed to process/compress image:', err);
+        alert('照片壓縮處理失敗，請重試！');
+      }
     }
   };
 

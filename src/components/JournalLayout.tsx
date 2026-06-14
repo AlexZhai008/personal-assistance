@@ -1,5 +1,6 @@
 import React from 'react';
-import { Settings, Calendar, BookOpen, BarChart3, ArrowLeft, Wifi, Battery } from 'lucide-react';
+import { Settings, Calendar, BookOpen, BarChart3, ArrowLeft, Wifi, Battery, Cloud, CloudOff, RefreshCw } from 'lucide-react';
+import { isSupabaseConfigured } from '../utils/supabaseClient';
 
 interface JournalLayoutProps {
   activeTab: 'today' | 'history' | 'stats';
@@ -9,79 +10,146 @@ interface JournalLayoutProps {
   isViewHistory: boolean;
   onBackToToday: () => void;
   children: React.ReactNode;
+  user: any;
+  syncStatus: 'synced' | 'pending' | 'syncing' | 'offline';
+  onOpenAuth: () => void;
+  onLogout: () => void;
 }
 
 export const JournalLayout: React.FC<JournalLayoutProps> = ({
-  activeTab,
-  onTabChange,
-  onOpenSettings,
-  selectedDate,
-  isViewHistory,
-  onBackToToday,
-  children,
-}) => {
-  // Format selectedDate to Chinese readable format (e.g. 6月13日)
-  const formatDateString = (dateStr: string) => {
-    try {
-      const parts = dateStr.split('-');
-      if (parts.length === 3) {
-        return `${parseInt(parts[1])}月${parseInt(parts[2])}日`;
+    activeTab,
+    onTabChange,
+    onOpenSettings,
+    selectedDate,
+    isViewHistory,
+    onBackToToday,
+    children,
+    user,
+    syncStatus,
+    onOpenAuth,
+    onLogout,
+  }) => {
+    // Format selectedDate to Chinese readable format (e.g. 6月13日)
+    const formatDateString = (dateStr: string) => {
+      try {
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          return `${parseInt(parts[1])}月${parseInt(parts[2])}日`;
+        }
+        return dateStr;
+      } catch {
+        return dateStr;
       }
-      return dateStr;
-    } catch {
-      return dateStr;
-    }
-  };
+    };
+  
+    // Hardcode a cozy mock time for our journal
+    const mockTime = "22:45";
 
-  // Hardcode a cozy mock time for our journal
-  const mockTime = "22:45";
+    const handleCloudClick = () => {
+      if (user) {
+        if (window.confirm(`確認要退出當前雲端帳號 (${user.email}) 嗎？退出後將暫停自動同步。`)) {
+          onLogout();
+        }
+      } else {
+        onOpenAuth();
+      }
+    };
 
-  return (
-    <div className="phone-frame" style={styles.phoneFrame}>
-      {/* Mock Mobile Status Bar */}
-      <div className="phone-status-bar">
-        <span>{mockTime}</span>
-        <div className="phone-status-icons">
-          <Wifi size={12} style={{ opacity: 0.8 }} />
-          <span style={{ fontSize: '10px', opacity: 0.8 }}>LTE</span>
-          <Battery size={14} style={{ opacity: 0.8, marginLeft: 2 }} />
-        </div>
-      </div>
+    // Helper to get status dot color
+    const getStatusDotStyle = () => {
+      switch (syncStatus) {
+        case 'synced':
+          return { backgroundColor: '#52c41a' }; // Green
+        case 'syncing':
+          return { backgroundColor: '#1890ff' }; // Blue
+        case 'pending':
+          return { backgroundColor: '#faad14' }; // Yellow
+        case 'offline':
+          return { backgroundColor: '#f5222d' }; // Red
+        default:
+          return { backgroundColor: '#bfbfbf' };
+      }
+    };
 
-      {/* Main Pocket Book Container */}
-      <div style={styles.notepadContainer}>
-        {/* Wire binder spiral rings on the left margin */}
-        <div className="spiral-binding" style={styles.spiralMargin}>
-          {Array.from({ length: 8 }).map((_, idx) => (
-            <div key={idx} className="spiral-ring" style={styles.spiralRingAdjusted} />
-          ))}
-        </div>
+    const getCloudTitle = () => {
+      if (!isSupabaseConfigured) return '雲端服務未配置（本地模式）';
+      if (!user) return '未登錄帳號（本地存儲，點擊登錄/同步）';
+      
+      const statusText = {
+        synced: '數據已實時同步至雲端',
+        syncing: '正在同步數據...',
+        pending: '有未同步的本地數據，等待聯網同步',
+        offline: '雲端同步連接失敗，已暫存本地',
+      }[syncStatus];
 
-        {/* Notebook Header */}
-        <header style={styles.header}>
-          <div style={styles.headerTitleGroup}>
-            <h1 style={styles.mainTitle}>时光手账</h1>
-            <span style={styles.dateLabel}>
-              {formatDateString(selectedDate)}
-            </span>
+      return `已登錄: ${user.email} (${statusText}，點擊退出帳號)`;
+    };
+  
+    return (
+      <div className="phone-frame" style={styles.phoneFrame}>
+        {/* Mock Mobile Status Bar */}
+        <div className="phone-status-bar">
+          <span>{mockTime}</span>
+          <div className="phone-status-icons">
+            <Wifi size={12} style={{ opacity: 0.8 }} />
+            <span style={{ fontSize: '10px', opacity: 0.8 }}>LTE</span>
+            <Battery size={14} style={{ opacity: 0.8, marginLeft: 2 }} />
           </div>
+        </div>
+  
+        {/* Main Pocket Book Container */}
+        <div style={styles.notepadContainer}>
+          {/* Wire binder spiral rings on the left margin */}
+          <div className="spiral-binding" style={styles.spiralMargin}>
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div key={idx} className="spiral-ring" style={styles.spiralRingAdjusted} />
+            ))}
+          </div>
+  
+          {/* Notebook Header */}
+          <header style={styles.header}>
+            <div style={styles.headerTitleGroup}>
+              <h1 style={styles.mainTitle}>时光手账</h1>
+              <span style={styles.dateLabel}>
+                {formatDateString(selectedDate)}
+              </span>
+            </div>
+  
+            <div style={styles.headerActions}>
+              {isViewHistory && (
+                <button 
+                  onClick={onBackToToday} 
+                  className="sketch-button" 
+                  style={styles.backTodayBtn}
+                  title="返回今天"
+                >
+                  <ArrowLeft size={12} />
+                </button>
+              )}
 
-          <div style={styles.headerActions}>
-            {isViewHistory && (
-              <button 
-                onClick={onBackToToday} 
-                className="sketch-button" 
-                style={styles.backTodayBtn}
-                title="返回今天"
-              >
-                <ArrowLeft size={12} />
+              {/* Cloud Sync Button */}
+              {isSupabaseConfigured && (
+                <button 
+                  onClick={handleCloudClick} 
+                  style={styles.cloudBtn} 
+                  title={getCloudTitle()}
+                >
+                  {syncStatus === 'syncing' ? (
+                    <RefreshCw size={18} className="spin" style={{ color: '#1890ff' }} />
+                  ) : !user ? (
+                    <CloudOff size={18} style={{ color: 'var(--color-text-muted)' }} />
+                  ) : (
+                    <Cloud size={18} style={{ color: 'var(--color-primary)' }} />
+                  )}
+                  {user && <span style={{ ...styles.statusDot, ...getStatusDotStyle() }} />}
+                </button>
+              )}
+
+              <button onClick={onOpenSettings} style={styles.settingsBtn} title="设置">
+                <Settings size={18} />
               </button>
-            )}
-            <button onClick={onOpenSettings} style={styles.settingsBtn} title="设置">
-              <Settings size={18} />
-            </button>
-          </div>
-        </header>
+            </div>
+          </header>
 
         {isViewHistory && (
           <div style={styles.historyNotice}>
@@ -211,6 +279,24 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     padding: '4px',
+  },
+  cloudBtn: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    padding: '4px',
+    position: 'relative' as const,
+  },
+  statusDot: {
+    position: 'absolute' as const,
+    bottom: '2px',
+    right: '2px',
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    border: '1px solid #fff',
   },
   historyNotice: {
     backgroundColor: 'var(--color-accent)',
