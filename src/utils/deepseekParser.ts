@@ -99,7 +99,7 @@ Available habits to check: ${habitsList.join(', ')}
 Please extract:
 1. title: A cute, literary, and minimalist title (4-8 Chinese characters) for this journal page in Chinese, summarizing the day's highlights (e.g., "今日晴空万里", "关于奶茶的小确幸", "跑步与晚风"). Do not include date.
 2. The dominant mood (must be one of: "happy", "calm", "sad", "angry", "tired"). If no mood is mentioned or implied, you can omit the field.
-3. A polished, friendly diary entry paragraph representing the user's day in Chinese based on their input.
+3. A polished, friendly diary entry paragraph representing the user's day in Chinese based on their input. Do NOT add any emotional states, feelings, psychological activities (e.g., "感觉充实又满足"), or facts that the user did not explicitly state or imply. Keep it strictly faithful to the factual content of the user's input, but polished to sound elegant and read smoothly as a diary entry.
 4. Financial records (expenses and income). For each, extract:
    - amount: number
    - category: must be one of "餐饮", "交通", "购物", "娱乐", "日用", "医疗", "收入", "其他"
