@@ -95,16 +95,16 @@ export function parseSentenceLocally(text: string, customHabits?: string[]): Par
   // 2. Parse Expenses & Income
   // Regex pattern for: "买奶茶花了15元" or "买奶茶15元"
   // Group 1: description, Group 2: amount
-  const buyPattern = /(?:买|吃|喝|打|租|坐|看)\s*([^\d，。！、,;!\s]{1,10}?)\s*(?:花了|用去|支出)?\s*(\d+(?:\.\d+)?)\s*(?:元|块|角|毛|分|刀|钱|块钱)?/g;
+  const buyPattern = /(?:买|吃|喝|打|租|坐|看)\s*([^\d，。！、,;!\s元块角毛分刀钱]{1,10}?)\s*(?:花了|用去|支出)?\s*(\d+(?:\.\d+)?)\s*(?:元|块|角|毛|分|刀|钱|块钱)?/g;
   
   // Regex pattern for: "花了15元买奶茶" or "花了15元在奶茶上"
   // Group 1: amount, Group 2: description
-  const spendPattern = /(?:花了|用去|支出|付了|花费|消费)\s*(\d+(?:\.\d+)?)\s*(?:元|块|角|毛|分|刀|钱|块钱)?\s*(?:买|吃|喝|打|在)?\s*([^\d，。！、,;!\s]{1,10})/g;
+  const spendPattern = /(?:花了|用去|支出|付了|花费|消费)\s*(\d+(?:\.\d+)?)\s*(?:元|块|角|毛|分|刀|钱|块钱)?\s*(?:买|吃|喝|打|在)?\s*([^\d，。！、,;!\s元块角毛分刀钱]{1,10})/g;
   
   // Regex pattern for income: "挣了500元" or "发工资1000元" or "收到200元红包"
   // Group 1: description/source, Group 2: amount
-  const incomePattern1 = /(?:挣了|赚了|发工资|收到|入账|收入)\s*(\d+(?:\.\d+)?)\s*(?:元|块|角|毛|分|刀|钱|块钱)?(?:\s*(?:的|作为)?\s*([^\d，。！、,;!\s]{1,10}))?/g;
-  const incomePattern2 = /([^\d，。！、,;!\s]{1,10}?)\s*(?:赚了|挣了|收入|入账|收到)\s*(\d+(?:\.\d+)?)\s*(?:元|块|角|毛|分|刀|钱|块钱)?/g;
+  const incomePattern1 = /(?:挣了|赚了|发工资|收到|入账|收入)\s*(\d+(?:\.\d+)?)\s*(?:元|块|角|毛|分|刀|钱|块钱)?(?:\s*(?:的|作为)?\s*([^\d，。！、,;!\s元块角毛分刀钱]{1,10}))?/g;
+  const incomePattern2 = /([^\d，。！、,;!\s元块角毛分刀钱]{1,10}?)\s*(?:赚了|挣了|收入|入账|收到)\s*(\d+(?:\.\d+)?)\s*(?:元|块|角|毛|分|刀|钱|块钱)?/g;
 
   let match;
   const matchedRanges: [number, number][] = [];
