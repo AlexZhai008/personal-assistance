@@ -48,42 +48,52 @@ export const HabitWidget: React.FC<HabitWidgetProps> = ({
           {habits.map((habit) => (
             <div
               key={habit.name}
-              onClick={() => {
-                if (!readOnly) {
-                  onToggleHabit(habit.name);
-                }
-              }}
               style={{
                 ...styles.habitRow,
                 backgroundColor: habit.completed ? 'rgba(143, 168, 155, 0.05)' : 'transparent',
-                cursor: readOnly ? 'default' : 'pointer',
               }}
             >
-              {/* Sketchy checkbox */}
-              <div style={styles.checkboxContainer}>
-                <div style={styles.checkboxOutline}>
-                  {habit.completed && <Check size={14} style={styles.checkIcon} />}
-                </div>
-
-                {/* Watercolor "Completed" Stamp */}
-                <div
-                  className={`stamp ${habit.completed ? 'active' : ''}`}
-                  style={styles.stampOverlay}
-                >
-                  已打卡
-                </div>
-              </div>
-
-              {/* Habit Name */}
-              <span
+              {/* Clickable inner area containing only the checkbox and text */}
+              <div
+                onClick={() => {
+                  if (!readOnly) {
+                    onToggleHabit(habit.name);
+                  }
+                }}
                 style={{
-                  ...styles.habitName,
-                  textDecoration: habit.completed ? 'line-through' : 'none',
-                  color: habit.completed ? 'var(--color-text-muted)' : 'var(--color-text)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  cursor: readOnly ? 'default' : 'pointer',
+                  width: 'fit-content', // Wraps closely to the text
                 }}
               >
-                {habit.name}
-              </span>
+                {/* Sketchy checkbox */}
+                <div style={styles.checkboxContainer}>
+                  <div style={styles.checkboxOutline}>
+                    {habit.completed && <Check size={14} style={styles.checkIcon} />}
+                  </div>
+
+                  {/* Watercolor "Completed" Stamp */}
+                  <div
+                    className={`stamp ${habit.completed ? 'active' : ''}`}
+                    style={styles.stampOverlay}
+                  >
+                    已打卡
+                  </div>
+                </div>
+
+                {/* Habit Name */}
+                <span
+                  style={{
+                    ...styles.habitName,
+                    textDecoration: habit.completed ? 'line-through' : 'none',
+                    color: habit.completed ? 'var(--color-text-muted)' : 'var(--color-text)',
+                  }}
+                >
+                  {habit.name}
+                </span>
+              </div>
             </div>
           ))}
 
@@ -170,7 +180,6 @@ const styles = {
     padding: '6px 8px',
     border: '1px dashed transparent',
     borderRadius: '8px',
-    cursor: 'pointer',
     position: 'relative' as const,
     transition: 'background-color 0.2s ease',
   },
