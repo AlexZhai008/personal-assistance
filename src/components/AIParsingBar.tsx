@@ -35,6 +35,16 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
 
+  React.useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {}
+      }
+    };
+  }, []);
+
   const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
   const supportSpeech = !!SpeechRecognitionClass;
 
@@ -75,60 +85,70 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
   const toggleListening = () => {
     if (isListening) {
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {
+          console.error(e);
+        }
       }
       setIsListening(false);
+      recognitionRef.current = null;
     } else {
       try {
-        if (!recognitionRef.current) {
-          const rec = new SpeechRecognitionClass();
-          rec.lang = 'zh-CN';
-          rec.continuous = false;
-          rec.interimResults = false;
+        const rec = new SpeechRecognitionClass();
+        rec.lang = 'zh-CN';
+        rec.continuous = false;
+        rec.interimResults = false;
 
-          rec.onstart = () => {
-            setIsListening(true);
-          };
+        rec.onstart = () => {
+          setIsListening(true);
+        };
 
-          rec.onresult = (event: any) => {
-            const transcript = event.results[0][0].transcript;
-            if (transcript) {
-              setInput((prev) => {
-                const newText = prev ? `${prev}${transcript}` : transcript;
-                // Automatically trigger AI analysis after transcribing the speech
-                setTimeout(() => performParse(newText), 150);
-                return newText;
-              });
-            }
-          };
+        rec.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          if (transcript) {
+            setInput((prev) => {
+              const newText = prev ? `${prev}${transcript}` : transcript;
+              // Automatically trigger AI analysis after transcribing the speech
+              setTimeout(() => performParse(newText), 150);
+              return newText;
+            });
+          }
+          // Stop immediately upon getting result to free the microphone
+          try {
+            rec.stop();
+          } catch (e) {}
+        };
 
-          rec.onerror = (event: any) => {
-            console.error('Speech recognition error:', event.error);
-            // Silently ignore normal browser speech end events (e.g. quiet pause or manual abort)
-            if (event.error === 'no-speech' || event.error === 'aborted') {
-              setIsListening(false);
-              return;
-            }
-            if (event.error === 'not-allowed') {
-              alert('无法使用麦克风，请在浏览器或系统设置中允许麦克风权限~');
-            } else {
-              alert(`语音识别出错: ${event.error}`);
-            }
+        rec.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error);
+          // Silently ignore normal browser speech end events (e.g. quiet pause or manual abort)
+          if (event.error === 'no-speech' || event.error === 'aborted') {
             setIsListening(false);
-          };
+            recognitionRef.current = null;
+            return;
+          }
+          if (event.error === 'not-allowed') {
+            alert('无法使用麦克风，请在浏览器或系统设置中允许麦克风权限~');
+          } else {
+            alert(`语音识别出错: ${event.error}`);
+          }
+          setIsListening(false);
+          recognitionRef.current = null;
+        };
 
-          rec.onend = () => {
-            setIsListening(false);
-          };
+        rec.onend = () => {
+          setIsListening(false);
+          recognitionRef.current = null;
+        };
 
-          recognitionRef.current = rec;
-        }
-
-        recognitionRef.current.start();
+        recognitionRef.current = rec;
+        rec.start();
       } catch (err) {
         console.error('Failed to start speech recognition:', err);
         alert('启动语音识别失败，请检查麦克风权限！');
         setIsListening(false);
+        recognitionRef.current = null;
       }
     }
   };

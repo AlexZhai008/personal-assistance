@@ -110,6 +110,9 @@ Please extract:
 You must return a valid JSON object matching the requested schema. Output ONLY the raw JSON object, do not wrap in markdown code blocks or write any explanation.
 `;
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
+
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -134,7 +137,10 @@ You must return a valid JSON object matching the requested schema. Output ONLY t
         },
         temperature: 0.1,
       }),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
@@ -151,7 +157,11 @@ You must return a valid JSON object matching the requested schema. Output ONLY t
     // Normalize properties defensively
     const parsed = normalizeParsedData(rawParsed, text);
     return parsed;
-  } catch (error) {
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('网络请求超时，自动切换至本地规则解析机制');
+    }
     console.error('DeepSeek parsing failed:', error);
     throw error;
   }

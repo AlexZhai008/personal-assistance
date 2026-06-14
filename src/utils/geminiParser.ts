@@ -27,6 +27,9 @@ Please extract:
 5. Habit completions from the available habits list. Include a habit ONLY if it was explicitly mentioned in the text. Mark completed as true if they completed it, and false if they explicitly said they did not do it (e.g., "没去跑步" -> name: "跑步", completed: false).
 `;
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
+
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -95,7 +98,10 @@ Please extract:
           },
         },
       }),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
@@ -113,7 +119,11 @@ Please extract:
       parsed.title = generateFallbackTitle(parsed.mood, parsed.diary || text);
     }
     return parsed;
-  } catch (error) {
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('网络请求超时，自动切换至本地规则解析机制');
+    }
     console.error('Gemini parsing failed, falling back to local parser:', error);
     throw error;
   }
