@@ -21,8 +21,8 @@ Please extract:
 3. A polished, friendly diary entry paragraph representing the user's day in Chinese based on their input. Do NOT add any emotional states, feelings, psychological activities (e.g., "感觉充实又满足"), or facts that the user did not explicitly state or imply. Keep it strictly faithful to the factual content of the user's input, but polished to sound elegant and read smoothly as a diary entry.
 4. Financial records (expenses and income). For each, extract:
    - amount: number
-   - category: must be one of "餐饮", "交通", "购物", "娱乐", "日用", "医疗", "收入", "其他"
-   - description: short string (e.g. "奶茶", "打车", "发工资")
+   - category: must be one of "餐饮", "交通", "购物", "娱乐", "日用", "医疗", "收入", "其他". If the user did not specify what the expense was for, use "其他". For income, use "收入".
+   - description: short string (e.g. "奶茶", "打车", "发工资"). If the user did not specify the reason/item (e.g., "花了80元", "赚了100元"), you MUST still extract the record, using "支出" as description for expenses, and "收入" for income.
    - type: "expense" (支出) or "income" (收入)
 5. Habit completions from the available habits list. Include a habit ONLY if it was explicitly mentioned in the text. Mark completed as true if they completed it, and false if they explicitly said they did not do it (e.g., "没去跑步" -> name: "跑步", completed: false).
 `;
