@@ -304,12 +304,70 @@ function App() {
             const cloudTime = cloudRec.localUpdatedAt || 0;
             
             if (localRec.synced === false) {
-              // Local changes pending. Keep local unless cloud is newer
-              if (localTime < cloudTime) {
+              // Check if the local record is actually empty/unmodified
+              const isLocalEmpty = 
+                (!localRec.title || localRec.title.trim() === '') &&
+                (!localRec.content || localRec.content.trim() === '') &&
+                (!localRec.mood) &&
+                (!localRec.customPhotoUrl) &&
+                (!localRec.expenses || localRec.expenses.length === 0) &&
+                (!localRec.habits || localRec.habits.every(h => !h.completed));
+
+              if (isLocalEmpty) {
+                // If local is completely empty, accept cloud version completely
                 merged[date] = cloudRec;
+              } else if (localTime < cloudTime) {
+                // Cloud is newer, accept cloud
+                merged[date] = cloudRec;
+              } else {
+                // Local is newer and not empty, but we can still fill in missing fields from cloud
+                const mergedRec = { ...localRec };
+                
+                // If local has no mood but cloud has mood, merge it!
+                if (!mergedRec.mood && cloudRec.mood) {
+                  mergedRec.mood = cloudRec.mood;
+                }
+                
+                // If local has no photo but cloud has one, merge it!
+                if (!mergedRec.customPhotoUrl && cloudRec.customPhotoUrl) {
+                  mergedRec.customPhotoUrl = cloudRec.customPhotoUrl;
+                  mergedRec.photoIndex = cloudRec.photoIndex;
+                }
+                
+                // If local has no content but cloud does, merge it!
+                if ((!mergedRec.content || mergedRec.content.trim() === '') && cloudRec.content) {
+                  mergedRec.content = cloudRec.content;
+                }
+                if ((!mergedRec.title || mergedRec.title.trim() === '') && cloudRec.title) {
+                  mergedRec.title = cloudRec.title;
+                }
+                
+                // Merge habits: if completed in either, set to completed
+                if (cloudRec.habits && cloudRec.habits.length > 0) {
+                  mergedRec.habits = mergedRec.habits.map(h => {
+                    const cloudHabit = cloudRec.habits.find(ch => ch.name === h.name);
+                    return {
+                      ...h,
+                      completed: h.completed || !!cloudHabit?.completed
+                    };
+                  });
+                }
+                
+                // Merge expenses: union of unique expenses
+                if (cloudRec.expenses && cloudRec.expenses.length > 0) {
+                  const localExpStrings = new Set(mergedRec.expenses.map(e => `${e.amount}-${e.description}-${e.type}`));
+                  cloudRec.expenses.forEach(e => {
+                    const key = `${e.amount}-${e.description}-${e.type}`;
+                    if (!localExpStrings.has(key)) {
+                      mergedRec.expenses.push(e);
+                    }
+                  });
+                }
+                
+                merged[date] = mergedRec;
               }
             } else {
-              // Both synced, keep the newer one
+              // Both synced, keep the newer one based on timestamp
               if (cloudTime > localTime) {
                 merged[date] = cloudRec;
               }
