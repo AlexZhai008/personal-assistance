@@ -1,0 +1,16 @@
+{
+  "name": "时光手账",
+  "short_name": "时光手账",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf4e8",
+  "theme_color": "#8fa89b",
+  "description": "智能AI生活记账手账",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

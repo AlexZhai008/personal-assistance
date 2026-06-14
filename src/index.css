@@ -1,0 +1,463 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@400;600;700&family=ZCOOL+XiaoWei&display=swap');
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+:root {
+  --color-bg: #faf4e8; /* Warm cream craft background */
+  --color-paper: #fdfbf7; /* Notebook page white */
+  --color-paper-lines: #f0e6d2; /* Notebook rule lines */
+  --color-border: #5c4a3c; /* Muted warm brown for sketch lines */
+  --color-text: #4a3e3d; /* Dark charcoal-brown for softer text */
+  --color-text-muted: #8c7b75;
+  
+  /* Pastel Accent Colors */
+  --color-primary: #8fa89b; /* Sage Green */
+  --color-secondary: #e2b091; /* Dusty Peach */
+  --color-accent: #f3df95; /* Butter Yellow */
+  
+  /* Mood Colors */
+  --color-joy: #f3a8a0; /* Soft coral/pink */
+  --color-calm: #9ec5e8; /* Soft sky blue */
+  --color-sad: #bfc8ce; /* Soft raincloud gray */
+  --color-angry: #e99e9b; /* Soft brick red */
+  --color-tired: #cbd3c9; /* Soft moss gray */
+  
+  --font-hand: 'Caveat', 'ZCOOL XiaoWei', cursive, serif;
+  --font-sans: 'Quicksand', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  
+  --sketch-border: 2px solid var(--color-border);
+  --sketch-shadow: 4px 4px 0px rgba(92, 74, 60, 0.2);
+  --sketch-shadow-hover: 6px 6px 0px rgba(92, 74, 60, 0.25);
+  
+  /* Sketchy organic border radius */
+  --radius-sketch: 255px 15px 225px 15px/15px 225px 15px 255px;
+  --radius-sketch-soft: 20px 10px 20px 10px/10px 20px 10px 20px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+}
+
+body {
+  background-color: var(--color-bg);
+  background-image: 
+    radial-gradient(var(--color-border) 0.5px, transparent 0.5px),
+    radial-gradient(var(--color-border) 0.5px, #faf4e8 0.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  padding: 16px;
+}
+
+/* Organic borders for sketchy items */
+.sketchy-box {
+  border: var(--sketch-border);
+  border-radius: var(--radius-sketch-soft);
+  box-shadow: var(--sketch-shadow);
+  background: var(--color-paper);
+  transition: all 0.2s ease;
+}
+
+.sketchy-box:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--sketch-shadow-hover);
+}
+
+/* Paper textures */
+.paper-dotted {
+  background-color: var(--color-paper);
+  background-image: radial-gradient(var(--color-paper-lines) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.paper-grid {
+  background-color: var(--color-paper);
+  background-image: 
+    linear-gradient(var(--color-paper-lines) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-paper-lines) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.paper-lined {
+  background-color: var(--color-paper);
+  background-image: linear-gradient(var(--color-paper-lines) 1px, transparent 1px);
+  background-size: 100% 28px;
+  line-height: 28px;
+}
+
+/* Washi Tape (纸胶带) effect */
+.washi-tape {
+  position: absolute;
+  height: 24px;
+  width: 90px;
+  background-color: var(--color-primary);
+  opacity: 0.75;
+  transform: rotate(-3deg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  user-select: none;
+  border-left: 2px dashed rgba(255,255,255,0.4);
+  border-right: 2px dashed rgba(255,255,255,0.4);
+}
+
+.washi-tape-peach {
+  background-color: var(--color-secondary);
+}
+
+.washi-tape-yellow {
+  background-color: var(--color-accent);
+}
+
+/* Polaroid Card (拍立得照片卡) */
+.polaroid {
+  background: white;
+  padding: 12px 12px 24px 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.05);
+  transform: rotate(2deg);
+  transition: all 0.3s ease;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.polaroid:hover {
+  transform: rotate(-1deg) scale(1.03);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.polaroid-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #fdfbf7;
+}
+
+.polaroid-caption {
+  font-family: var(--font-hand);
+  text-align: center;
+  font-size: 20px;
+  margin-top: 10px;
+  color: var(--color-text-muted);
+}
+
+/* Watercolor Stamp Effect (水彩印章) */
+.stamp {
+  border: 3px double var(--color-primary);
+  border-radius: 50%;
+  color: var(--color-primary);
+  font-family: var(--font-hand);
+  font-weight: bold;
+  font-size: 18px;
+  padding: 4px 8px;
+  text-transform: uppercase;
+  transform: rotate(-12deg);
+  display: inline-block;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stamp.active {
+  opacity: 0.8;
+  transform: rotate(-12deg) scale(1.1);
+}
+
+/* Notebook Binding Rings (手账活页圈) */
+.spiral-binding {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  position: absolute;
+  left: -12px;
+  top: 40px;
+  bottom: 40px;
+  width: 24px;
+  z-index: 10;
+}
+
+.spiral-ring {
+  width: 20px;
+  height: 8px;
+  background: linear-gradient(135deg, #d8d8d8 0%, #b5b5b5 50%, #8c8c8c 100%);
+  border-radius: 4px;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.25);
+  margin: 8px 0;
+}
+
+/* Custom Webkit Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+  border: 2px solid var(--color-paper);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text);
+}
+
+/* Custom inputs for sketchy styling */
+.sketch-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px dashed var(--color-border);
+  outline: none;
+  padding: 4px 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.sketch-input:focus {
+  border-bottom-style: solid;
+  border-bottom-color: var(--color-primary);
+}
+
+.sketch-button {
+  background: var(--color-paper);
+  border: var(--sketch-border);
+  border-radius: var(--radius-sketch-soft);
+  box-shadow: 2px 2px 0px var(--color-border);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.1s ease;
+}
+
+.sketch-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--color-border);
+}
+
+.sketch-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 2px 2px 0px var(--color-border) !important;
+}
+
+.sketch-button-primary {
+  background-color: var(--color-accent);
+}
+
+.sketch-button-primary:hover {
+  background-color: #ebd171;
+}
+
+/* Animations */
+@keyframes fly-to-widget {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.flying-particle {
+  position: absolute;
+  z-index: 100;
+  pointer-events: none;
+  animation: fly-to-widget 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Page animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1) rotate(15deg); opacity: 0.75; }
+  50% { transform: scale(1.05) rotate(12deg); opacity: 0.85; }
+  100% { transform: scale(1) rotate(15deg); opacity: 0.75; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1.2s linear infinite;
+}
+
+/* Phone Mockup Frame */
+.phone-frame {
+  width: 395px;
+  height: 840px;
+  border: 8px solid var(--color-border);
+  border-radius: 40px;
+  background-color: var(--color-bg);
+  box-shadow: 10px 10px 0px rgba(92, 74, 60, 0.25);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Status Bar */
+.phone-status-bar {
+  height: 30px;
+  background-color: var(--color-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px 0 20px;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: var(--font-sans);
+  color: var(--color-text-muted);
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.phone-status-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.phone-content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--color-bg);
+  background-image: 
+    radial-gradient(var(--color-border) 0.5px, transparent 0.5px),
+    radial-gradient(var(--color-border) 0.5px, #faf4e8 0.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+/* Bottom Tab Bar styled like tapes */
+.phone-tab-bar {
+  height: 64px;
+  background-color: #f7f1e4;
+  border-top: 3px solid var(--color-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+  z-index: 10;
+  box-shadow: 0 -4px 10px rgba(92, 74, 60, 0.08);
+}
+
+.phone-tab-btn {
+  flex: 1;
+  height: 40px;
+  margin: 0 4px;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 2px 2px 0px var(--color-border);
+  transition: all 0.15s ease;
+}
+
+.phone-tab-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--color-border);
+}
+
+.phone-tab-btn-active {
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 0px var(--color-border);
+}
+
+/* On actual mobile screens, expand to full screen and remove phone frame */
+@media (max-width: 768px) {
+  html, body {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    touch-action: pan-y; /* Only permit vertical scrolling, prevent horizontal swiping */
+    background-color: var(--color-bg) !important; /* Ensure notch and bottom areas blend with cream background */
+  }
+  body {
+    padding: 0;
+    background-color: var(--color-bg) !important;
+    display: block; /* Disable flex centering on mobile to prevent subpixel layout offsets */
+  }
+  #root {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+  .phone-frame {
+    width: 100% !important;
+    height: calc(100% + 15px) !important; /* Extend slightly to push the bottom off-screen */
+    position: relative;
+    top: 15px; /* Shift the entire frame down to move title down and hide bottom whitespace */
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding-top: env(safe-area-inset-top);
+  }
+  .phone-status-bar {
+    display: none !important;
+  }
+  .phone-tab-bar {
+    height: calc(64px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+
+  /* Force minimum 16px font size on mobile to prevent iOS Safari auto-zooming on focus */
+  input, textarea, select, .sketch-input {
+    font-size: 16px !important;
+  }
+
+  /* Hide scrollbar for Chrome, Safari, and Opera on mobile viewports */
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+  /* Hide scrollbar for IE, Edge, and Firefox on mobile viewports */
+  * {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
+}
+

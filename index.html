@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>时光手账</title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <script>
+      window.addEventListener('error', function(event) {
+        var errDiv = document.createElement('div');
+        errDiv.style.position = 'fixed';
+        errDiv.style.top = '0';
+        errDiv.style.left = '0';
+        errDiv.style.width = '100%';
+        errDiv.style.backgroundColor = '#fecaca';
+        errDiv.style.color = '#b91c1c';
+        errDiv.style.padding = '20px';
+        errDiv.style.zIndex = '99999';
+        errDiv.style.fontFamily = 'monospace';
+        errDiv.style.fontSize = '14px';
+        errDiv.style.borderBottom = '4px solid #ef4444';
+        errDiv.style.whiteSpace = 'pre-wrap';
+        errDiv.innerHTML = '<h3>⚠️ 网页运行错误 (Runtime Error)</h3>' +
+          '<strong>错误消息:</strong> ' + event.message + '<br>' +
+          '<strong>发生文件:</strong> ' + event.filename + '<br>' +
+          '<strong>行号:</strong> ' + event.lineno + ':' + event.colno + '<br>' +
+          '<strong>堆栈:</strong> <pre style="margin-top:8px; background:#fff; padding:10px; border-radius:4px; overflow:auto; max-height:200px;">' + (event.error ? event.error.stack : '无') + '</pre>';
+        document.body.appendChild(errDiv);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
