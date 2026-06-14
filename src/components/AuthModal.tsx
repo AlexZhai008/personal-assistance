@@ -77,29 +77,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   };
 
-  const handleWeChatAuth = async () => {
-    if (!isSupabaseConfigured) {
-      setMessage({ type: 'error', text: '雲端服務未配置憑證，無法啟用微信登錄。' });
-      return;
-    }
 
-    setLoading(true);
-    setMessage(null);
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'wechat' as any, // Supabase support for WeChat
-        options: {
-          redirectTo: window.location.origin,
-        }
-      });
-      if (error) throw error;
-    } catch (err: any) {
-      console.error(err);
-      setMessage({ type: 'error', text: err.message || '微信授權引導失敗，請檢查微信配置。' });
-      setLoading(false);
-    }
-  };
 
   return (
     <div style={styles.overlay}>
@@ -187,48 +165,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
         </form>
 
-        {/* WeChat OAuth Login Section */}
-        {isSupabaseConfigured && (
-          <div style={styles.oauthSection}>
-            <div style={styles.oauthDivider}>
-              <span style={styles.dividerText}>其他登錄方式</span>
-            </div>
-            <button
-              onClick={handleWeChatAuth}
-              disabled={loading}
-              className="sketch-button"
-              style={styles.wechatBtn}
-            >
-              {/* Custom SVG WeChat Icon */}
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: 8 }}
-              >
-                <path
-                  d="M8.5 13.5C8.22 13.5 8 13.28 8 13C8 12.72 8.22 12.5 8.5 12.5C8.78 12.5 9 12.72 9 13C9 13.28 8.78 13.5 8.5 13.5ZM13.5 13.5C13.22 13.5 13 13.28 13 13C13 12.72 13.22 12.5 13.5 12.5C13.78 12.5 14 12.72 14 13C14 13.28 13.78 13.5 13.5 13.5Z"
-                  fill="#fff"
-                />
-                <path
-                  d="M17.5 7.5C16.67 7.5 16 8.17 16 9C16 9.83 16.67 10.5 17.5 10.5C18.33 10.5 19 9.83 19 9C19 8.17 18.33 7.5 17.5 7.5ZM21.5 7.5C20.67 7.5 20 8.17 20 9C20 9.83 20.67 10.5 21.5 10.5C22.33 10.5 23 9.83 23 9C23 8.17 22.33 7.5 21.5 7.5Z"
-                  fill="#fff"
-                />
-                <path
-                  d="M16 11.23C16.94 11.23 17.8 11.53 18.5 12.04C18.66 11.23 18.75 10.38 18.75 9.5C18.75 5.36 14.83 2 10 2C5.17 2 1.25 5.36 1.25 9.5C1.25 12.03 2.91 14.28 5.48 15.65C5.64 15.74 5.75 15.93 5.72 16.12L5.27 18.84C5.22 19.14 5.51 19.37 5.79 19.23L9.22 17.43C9.38 17.35 9.56 17.36 9.71 17.44C10.52 17.86 11.45 18.09 12.43 18.09C12.23 17.44 12.13 16.74 12.13 16.02C12.13 13.38 13.86 11.23 16 11.23Z"
-                  fill="#47B947"
-                />
-                <path
-                  d="M22.75 16C22.75 12.96 19.93 10.5 16.45 10.5C12.97 10.5 10.15 12.96 10.15 16C10.15 19.04 12.97 21.5 16.45 21.5C17.22 21.5 17.96 21.37 18.64 21.12C18.76 21.08 18.9 21.09 19.01 21.15L21.46 22.44C21.68 22.56 21.92 22.39 21.88 22.14L21.53 20.08C21.51 19.94 21.58 19.8 21.7 19.72C22.34 18.74 22.75 17.47 22.75 16Z"
-                  fill="#47B947"
-                />
-              </svg>
-              微信帳號登錄
-            </button>
-          </div>
-        )}
+
 
         {/* Mode Toggle Link */}
         {isSupabaseConfigured && (
