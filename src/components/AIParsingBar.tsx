@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Sparkles, Check, RefreshCw, AlertCircle, Trash2, Plus, Mic, MicOff } from 'lucide-react';
+import { Sparkles, Check, RefreshCw, Trash2, Plus, Mic, MicOff } from 'lucide-react';
 import type { ParsedData, ParsedExpense } from '../utils/localParser';
 import { parseSentenceLocally } from '../utils/localParser';
 import { parseSentenceWithGemini } from '../utils/geminiParser';
@@ -29,7 +29,6 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [reviewData, setReviewData] = useState<ParsedData | null>(null);
-  const [errorMsg, setErrorMsg] = useState('');
   const [parserUsed, setParserUsed] = useState<'deepseek' | 'gemini' | 'local'>('local');
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +54,6 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
     if (!textToParse) return;
 
     setLoading(true);
-    setErrorMsg('');
     setReviewData(null);
 
     try {
@@ -77,7 +75,6 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
       setReviewData(result);
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(`AI 智能解析失败，已为您自动切换到本地解析机制。错误原因: ${err.message || '未知'}`);
       setParserUsed('local');
       // Fallback immediately to local
       const localResult = parseSentenceLocally(textToParse, habitsList);
@@ -391,13 +388,6 @@ export const AIParsingBar: React.FC<AIParsingBarProps> = ({
             <span style={styles.reviewSubtitle}>请检查并调整以下数据，然后保存写入今日手账：</span>
           </div>
 
-          {errorMsg && (
-            <div style={styles.warningAlert}>
-              <AlertCircle size={14} style={{ marginRight: 6 }} />
-              {errorMsg}
-            </div>
-          )}
-
           <div style={styles.reviewGrid}>
             {/* Column 1: Mood & Diary */}
             <div style={styles.reviewCol}>
@@ -655,17 +645,6 @@ const styles = {
     color: 'var(--color-text-muted)',
     display: 'block',
     marginTop: '2px',
-  },
-  warningAlert: {
-    backgroundColor: '#fef2f2',
-    border: '1px solid #fecaca',
-    borderRadius: '6px',
-    padding: '8px',
-    fontSize: '12px',
-    color: '#b91c1c',
-    marginBottom: '12px',
-    display: 'flex',
-    alignItems: 'center',
   },
   reviewGrid: {
     display: 'flex',
